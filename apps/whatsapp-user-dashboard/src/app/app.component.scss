@@ -1,0 +1,12 @@
+.loader_div {
+  height: calc(100% - var(--header-height));
+  width: 100vw;
+  position: absolute;
+  top: var(--header-height);
+  left: 0;
+  z-index: 10;
+  background-color: #ffffff8c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
