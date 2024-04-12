@@ -1,0 +1,19 @@
+{
+  "hosting": {
+    "public": "dist/apps/whatsapp-user-dashboard/browser",
+    "predeploy":[
+      "yarn nx run whatsapp-user-dashboard:build:production"
+    ],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

@@ -1,0 +1,258 @@
+openapi: 3.0.1
+info:
+  title: WhatsApp API MultiDevice
+  version: 3.7.0
+  description: This API is used for sending whatsapp via API
+servers:
+  - url: http://localhost:4000/v1
+  - url: https://{baseDomain}:{port}/v1
+    variables:
+      baseDomain:
+        default: demo.com
+        description: Ip or Hostname of the domain
+      port:
+        enum:
+          - '443'
+          - '8443'
+          - '4000'
+        default: '443'
+tags:
+  - name: SendMessages
+    description: Sending Text And Whatsapp Message Over Whatsapp
+security:
+  - tokenKey: []
+  
+paths:
+  /send_message:
+    post:
+      operationId: sendMeaage
+      tags:
+        - SendMessages
+      summary: Send Text Message
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["to","msg"]
+              properties:
+                to:
+                  type: array
+                  description: Phone number with country code
+                  items:
+                    type: string
+                    example: "919999998888"
+                msg:
+                  type: string
+                  example: Demo Test Message 
+                  description: Message To Send
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendMessageSuccessReponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInternalServer'
+  /send_media:
+    post:
+      operationId: sendMedia
+      tags:
+        - SendMessages
+      summary: Send Any Media File
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: ["to"]
+              properties:
+                to:
+                  type: array
+                  description: Phone number with country code
+                  items:
+                    type: string
+                    example: "919999998888"
+                msg:
+                  type: string
+                  example: This is Extra Message Attached to Caption
+                  description: Caption to send
+                file:
+                  type: string
+                  format: binary
+                  description: Media To Be Send
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendMessageSuccessReponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInternalServer'
+
+  /send_media_64:
+    post:
+      operationId: sendMediaBase64
+      tags:
+        - SendMessages
+      summary: Send Text Message
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["to","fileName"]
+              properties:
+                to:
+                  type: array
+                  description: Phone number with country code
+                  items:
+                    type: string
+                    example: "919999998888"
+                msg:
+                  type: string
+                  example: Demo Test Message 
+                  description: Message To Send
+                fileName:
+                  type: string
+                  example: icon.png
+                  description: Name Of The File
+                base64:
+                  type: string
+                  example: iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=
+                  description: base64 encoded file
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendMessageSuccessReponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInternalServer'
+
+components:
+  securitySchemes:
+     tokenKey:
+      type: apiKey
+      in: header
+      name: X-Api-Token
+      description: All requests must include 
+  schemas:
+    SendMessageSuccessReponse:
+      type: object
+      properties:
+        FailedNumber:
+          type: boolean
+          example: false
+        SuccessNumber: 
+          type: object
+          properties:
+            Timestamp: 
+              type: string
+              format: date-time
+              example: 2024-04-12T05:46:40+05:30
+            ID: 
+              type: string
+              example: 3EB00A1DFBF1322CC49D9A
+            ServerID:
+              type: number
+              example: 0
+            DebugTimings: 
+              type: object
+              properties: 
+                Queue: 
+                  type: number
+                  example: 500
+                Marshal: 
+                  type: number
+                  example: 42208
+                GetParticipants: 
+                  type: number
+                  example: 0
+                GetDevices: 
+                  type: number
+                  example: 243031041
+                GroupEncrypt: 
+                  type: number
+                  example: 0
+                PeerEncrypt: 
+                  type: number
+                  example: 251993000
+                Send: 
+                  type: number
+                  example: 218042
+                Resp: 
+                  type: number
+                  example: 389203542
+                Retry: 
+                  type: number
+                  example: 0
+    ErrorInternalServer:
+      type: object
+      properties:
+        code:
+          type: string
+          example: INTERNAL_SERVER_ERROR
+          description: 'SYSTEM_CODE_ERROR'
+        message:
+          type: string
+          example: you are not loggin
+          description: 'Detail error message'
+        name: 
+          type: string
+          example: ERROR_INTERNAL_SERVER_ERROR
+        results:
+          type: object
+          example: null
+          description: 'additional data'
+    ErrorBadRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          example: 400
+          description: 'HTTP Status Code'
+        message:
+          type: string
+          example: field cannot be blank
+          description: 'Detail error message'
+        name: 
+          type: string
+          example: ERROR_INVALID_INPUT
+        extra:
+          type: object
+          example: null
+          description: 'additional data'
